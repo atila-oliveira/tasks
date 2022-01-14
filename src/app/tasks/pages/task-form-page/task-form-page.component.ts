@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { TaskRepository } from '../../repositories/task.repository';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-task-form-page',
@@ -34,7 +35,8 @@ export class TaskFormPageComponent implements OnInit {
   constructor(
     private formBuild: FormBuilder,
     private activatedRouter: ActivatedRoute,
-    private taskRepository: TaskRepository
+    private taskRepository: TaskRepository,
+    private snack: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -55,7 +57,7 @@ export class TaskFormPageComponent implements OnInit {
           done: response.done,
         });
       },
-      error: () => alert('Erro ao buscar uma tarefa')
+      error: () => this.snack.open('Erro ao buscar uma tarefa')
     });
   }
 
@@ -74,16 +76,26 @@ export class TaskFormPageComponent implements OnInit {
 
   create(task: ITask): void {
     this.taskRepository.create(task).subscribe({
-      next: (response: ITask) => this.taskId = response.id,
-      error: () => alert('Erro ao criar a tarefa')
+      next: (response: ITask) => {
+        this.taskId = response.id
+        this.snack.open("Tarefa salva com Sucesso!")
+      },
+      error: () => this.snack.open('Erro ao criar a tarefa')
     });
   }
 
   update(task: ITask): void {
     this.taskRepository.update(task).subscribe({
-      next: (response: ITask) => this.taskId = response.id,
-      error: () => alert('Erro ao atualizar a tarefa')
+      next: (response: ITask) => {
+        this.taskId = response.id
+        this.snack.open("Tarefa atualizada com Sucesso!")
+      },
+      error: () => this.snack.open('Erro ao atualizar a tarefa')
     });
+  }
+
+  exibirModal(){
+    
   }
 }
 
